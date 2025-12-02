@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>AegisCore</title>
+    <link rel="icon" href="Gemini_Generated_Image_kevgvmkevgvmkevg.png" >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Connection Status Badge -->
+        <div class="connection-badge">
+            <span id="connectionStatus" class="badge bg-danger">
+                <i class="fas fa-wifi"></i> Disconnected
+            </span>
+        </div>
+
+        <!-- Brand Header -->
+        <div class="text-center mb-4">
+            <h1 class="brand-logo display-3 fw-bold mb-2" id="brandLogo" data-animate-child>
+                <i class="fas fa-shield-alt"></i>
+                AEGISCORE
+            </h1>
+            <p class="text-light opacity-75" data-animate-child>Advanced Home Security Intelligence System</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-tabs justify-content-center mb-4" id="mainTabs" role="tablist" data-animate-child>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab">
+                    <i class="fas fa-home"></i> Dashboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data" type="button" role="tab">
+                    <i class="fas fa-database"></i> Data Analytics
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="sensors-tab" data-bs-toggle="tab" data-bs-target="#sensors" type="button" role="tab">
+                    <i class="fas fa-sensors"></i> Sensor Details
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="mainTabsContent">
+            <!-- Home Tab -->
+            <div class="tab-pane fade show active" id="home" role="tabpanel">
+                <!-- System Status -->
+                <div class="row mb-4" data-animate-child>
+                    <div class="col-md-6">
+                        <div class="card sensor-card" data-animate-child>
+                            <div class="card-body">
+                                <h5 class="card-title text-cyber">
+                                    <i class="fas fa-link"></i> System Status
+                                </h5>
+                                <div id="systemStatus">
+                                    <p class="mb-1">MQTT: <span id="mqttStatus" class="alert-status bg-secondary">Connecting...</span></p>
+                                    <p class="mb-1">SEEN: <span id="seenStatus" class="alert-status bg-secondary">Loading...</span></p>
+                                </div>
+                                <button id="toggleSeen" class="btn btn-success btn-sm mt-2" disabled>
+                                    <i class="fas fa-eye"></i> Enable SEEN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card sensor-card" data-animate-child>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-clock"></i> Live Sensor Data
+                                </h5>
+                                <div class="rtc-data">
+                                    <div id="rtcData">Waiting for data...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Sensors -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h4 class="mb-3 cyber-glow" data-animate-child>
+                            <i class="fas fa-sensors"></i> Security Sensors
+                        </h4>
+                    </div>
+
+                    <!-- Water Sensor -->
+                    <div class="col-md-3 col-6 mb-3">
+                        <div id="waterSensorCard" class="card sensor-card" data-animate-child>
+                            <div class="card-body text-center">
+                                <i class="fas fa-tint fa-2x mb-2 text-primary"></i>
+                                <h6>Water Sensor</h6>
+                                <div class="sensor-value display-6 fw-bold text-primary" id="waterValue">0</div>
+                                <div class="sensor-status">
+                                    <span id="waterStatus" class="alert-status bg-success">Normal</span>
+                                    <span id="waterLed" class="led-indicator" style="display: none;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flame Sensor -->
+                    <div class="col-md-3 col-6 mb-3">
+                        <div id="flameSensorCard" class="card sensor-card" data-animate-child>
+                            <div class="card-body text-center">
+                                <i class="fas fa-fire fa-2x mb-2 text-danger"></i>
+                                <h6>Flame Sensor</h6>
+                                <div class="sensor-value display-6 fw-bold text-danger" id="flameValue">0</div>
+                                <div class="sensor-status">
+                                    <span id="flameStatus" class="alert-status bg-success">Normal</span>
+                                    <span id="flameLed" class="led-indicator" style="display: none;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gas Sensor -->
+                    <div class="col-md-3 col-6 mb-3">
+                        <div id="gasSensorCard" class="card sensor-card" data-animate-child>
+                            <div class="card-body text-center">
+                                <i class="fas fa-wind fa-2x mb-2 text-success"></i>
+                                <h6>Gas Sensor</h6>
+                                <div class="sensor-value display-6 fw-bold text-success" id="gasValue">0</div>
+                                <div class="sensor-status">
+                                    <span id="gasStatus" class="alert-status bg-success">Normal</span>
+                                    <span id="gasLed" class="led-indicator" style="display: none;"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Temperature -->
+                    <div class="col-md-3 col-6 mb-3">
+                        <div id="tempSensorCard" class="card sensor-card" data-animate-child>
+                            <div class="card-body text-center">
+                                <i class="fas fa-thermometer-half fa-2x mb-2 text-warning"></i>
+                                <h6>Temperature</h6>
+                                <div class="sensor-value display-6 fw-bold text-warning" id="tempValue">0°C</div>
+                                <div class="sensor-status">
+                                    <span id="fanStatus" class="alert-status bg-success">Normal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security System & Control + Valve Control -->
+                <div class="row">
+                    <!-- Security System -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card sensor-card" data-animate-child>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-shield-alt"></i> Security System
+                                </h5>
+                                <div class="mb-3">
+                                    <p class="mb-1">PIR Status:
+                                        <span id="pirStatus" class="alert-status bg-secondary">Unknown</span>
+                                    </p>
+                                    <p class="mb-1">Motion:
+                                        <span id="motionStatus" class="alert-status bg-secondary">Loading...</span>
+                                    </p>
+                                    <p class="mb-1">PIR Sensor:
+                                        <span id="pirSensorStatus" class="alert-status bg-secondary">Loading...</span>
+                                    </p>
+                                </div>
+                                <div class="btn-group w-100 mb-2" role="group">
+                                    <button id="armPir" class="btn btn-danger">
+                                        <i class="fas fa-lock"></i> Arm System
+                                    </button>
+                                    <button id="disarmPir" class="btn btn-success">
+                                        <i class="fas fa-lock-open"></i> Disarm
+                                    </button>
+                                </div>
+                                <div class="btn-group w-100" role="group">
+                                    <button id="enablePir" class="btn btn-outline-info">
+                                        <i class="fas fa-eye"></i> Enable PIR
+                                    </button>
+                                    <button id="disablePir" class="btn btn-outline-warning">
+                                        <i class="fas fa-eye-slash"></i> Disable PIR
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valve Control -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card sensor-card" data-animate-child>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-toggle-on"></i> Valve Control
+                                </h5>
+
+                                <!-- Water Valve -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Water Valve:</span>
+                                        <span id="waterValveStatus" class="alert-status bg-success">OPEN</span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <button id="openWaterValve" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-faucet"></i> Open
+                                        </button>
+                                        <button id="closeWaterValve" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-faucet-drip"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Gas Valve -->
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Gas Valve:</span>
+                                        <span id="gasValveStatus" class="alert-status bg-success">OPEN</span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <button id="openGasValve" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-fire"></i> Open
+                                        </button>
+                                        <button id="closeGasValve" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-fire-extinguisher"></i> Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sensors Control (Enable / Disable + Lock Icon) -->
+                <div class="row">
+                    <div class="col-md-12 mb-4">
+                        <div class="card sensor-card" data-animate-child>
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-sliders-h"></i> Sensors Control
+                                </h5>
+
+                                <!-- Water Sensor Control -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Water Sensor:</span>
+                                        <span id="waterSensorToggleStatus" class="alert-status bg-secondary">
+                                            <i class="fas fa-lock"></i> Disabled
+                                        </span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <button id="enableWaterSensor" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-check-circle"></i> Enable
+                                        </button>
+                                        <button id="disableWaterSensor" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-ban"></i> Disable
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Flame Sensor Control -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Flame Sensor:</span>
+                                        <span id="flameSensorToggleStatus" class="alert-status bg-secondary">
+                                            <i class="fas fa-lock"></i> Disabled
+                                        </span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <button id="enableFlameSensor" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-check-circle"></i> Enable
+                                        </button>
+                                        <button id="disableFlameSensor" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-ban"></i> Disable
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Gas Sensor Control -->
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span>Gas Sensor:</span>
+                                        <span id="gasSensorToggleStatus" class="alert-status bg-secondary">
+                                            <i class="fas fa-lock"></i> Disabled
+                                        </span>
+                                    </div>
+                                    <div class="btn-group w-100" role="group">
+                                        <button id="enableGasSensor" class="btn btn-outline-success btn-sm">
+                                            <i class="fas fa-check-circle"></i> Enable
+                                        </button>
+                                        <button id="disableGasSensor" class="btn btn-outline-danger btn-sm">
+                                            <i class="fas fa-ban"></i> Disable
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- end home tab -->
+
+            <!-- Data Analytics Tab -->
+            <div class="tab-pane fade" id="data" role="tabpanel">
+                <div class="card main-card" id="dataMainCard">
+                    <div class="card-body">
+                        <h4 class="mb-4 cyber-glow" data-animate-child>
+                            <i class="fas fa-chart-line"></i> Data Analytics & History
+                        </h4>
+
+                        <!-- Date Selector -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Select Date:</label>
+                                <input type="date" id="dateSelector" class="form-control bg-dark text-light">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Data Type:</label>
+                                <select id="dataTypeSelector" class="form-select bg-dark text-light">
+                                    <option value="all">All Data</option>
+                                    <option value="water">Water Sensor</option>
+                                    <option value="flame">Flame Sensor</option>
+                                    <option value="gas">Gas Sensor</option>
+                                    <option value="temperature">Temperature</option>
+                                    <option value="motion">Motion Events</option>
+                                    <option value="alerts">Security Alerts</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Summary Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 col-6">
+                                <div class="card sensor-card text-center" data-animate-child>
+                                    <div class="card-body">
+                                        <i class="fas fa-tint fa-2x text-primary mb-2"></i>
+                                        <h6>Water Alerts</h6>
+                                        <div class="display-6 fw-bold text-primary" id="waterAlertsCount">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card sensor-card text-center" data-animate-child>
+                                    <div class="card-body">
+                                        <i class="fas fa-fire fa-2x text-danger mb-2"></i>
+                                        <h6>Flame Alerts</h6>
+                                        <div class="display-6 fw-bold text-danger" id="flameAlertsCount">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card sensor-card text-center" data-animate-child>
+                                    <div class="card-body">
+                                        <i class="fas fa-wind fa-2x text-success mb-2"></i>
+                                        <h6>Gas Alerts</h6>
+                                        <div class="display-6 fw-bold text-success" id="gasAlertsCount">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="card sensor-card text-center" data-animate-child>
+                                    <div class="card-body">
+                                        <i class="fas fa-running fa-2x text-warning mb-2"></i>
+                                        <h6>Motion Events</h6>
+                                        <div class="display-6 fw-bold text-warning" id="motionEventsCount">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Table -->
+                        <div class="data-table">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Sensor</th>
+                                            <th>Value</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dataTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center">No data available</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Data (Collapsed by default) -->
+                        <div class="mt-3">
+                            <button class="btn collapse-btn w-100" type="button" data-bs-toggle="collapse" data-bs-target="#detailedData">
+                                <i class="fas fa-chevron-down"></i> Show Detailed Second-by-Second Data
+                            </button>
+                            <div class="collapse mt-3" id="detailedData">
+                                <div class="data-table">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Timestamp</th>
+                                                    <th>Water</th>
+                                                    <th>Flame</th>
+                                                    <th>Gas</th>
+                                                    <th>Temp</th>
+                                                    <th>Motion</th>
+                                                    <th>PIR Armed</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="detailedDataBody">
+                                                <tr>
+                                                    <td colspan="7" class="text-center">No detailed data available</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end data tab -->
+
+            <!-- Sensor Details Tab -->
+            <div class="tab-pane fade" id="sensors" role="tabpanel">
+                <div class="card main-card">
+                    <div class="card-body">
+                        <h4 class="mb-4 cyber-glow" data-animate-child>
+                            <i class="fas fa-microchip"></i> Individual Sensor Data
+                        </h4>
+
+                        <ul class="nav nav-tabs mb-4" id="sensorTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="water-tab" data-bs-toggle="tab" data-bs-target="#waterSensor" type="button">
+                                    <i class="fas fa-tint"></i> Water Sensor
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="flame-tab" data-bs-toggle="tab" data-bs-target="#flameSensor" type="button">
+                                    <i class="fas fa-fire"></i> Flame Sensor
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="gas-tab" data-bs-toggle="tab" data-bs-target="#gasSensor" type="button">
+                                    <i class="fas fa-wind"></i> Gas Sensor
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="temp-tab" data-bs-toggle="tab" data-bs-target="#tempSensor" type="button">
+                                    <i class="fas fa-thermometer-half"></i> Temperature
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="motion-tab" data-bs-toggle="tab" data-bs-target="#motionSensor" type="button">
+                                    <i class="fas fa-running"></i> Motion Sensor
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="sensorTabsContent">
+                            <div class="tab-pane fade show active" id="waterSensor" role="tabpanel">
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Water Sensor History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                </div>
+                                <div class="data-table">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                                <th>Valve Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="waterSensorData"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="flameSensor" role="tabpanel">
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-fire text-danger"></i> Flame Sensor History</h5>
+                                    <canvas id="flameChart" height="100"></canvas>
+                                </div>
+                                <div class="data-table">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                                <th>Valve Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="flameSensorData"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="gasSensor" role="tabpanel">
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-wind text-success"></i> Gas Sensor History</h5>
+                                    <canvas id="gasChart" height="100"></canvas>
+                                </div>
+                                <div class="data-table">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Value</th>
+                                                <th>Status</th>
+                                                <th>Valve Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="gasSensorData"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tempSensor" role="tabpanel">
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-thermometer-half text-warning"></i> Temperature History</h5>
+                                    <canvas id="tempChart" height="100"></canvas>
+                                </div>
+                                <div class="data-table">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Temperature</th>
+                                                <th>Fan Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tempSensorData"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="motionSensor" role="tabpanel">
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-running text-info"></i> Motion Detection History</h5>
+                                    <canvas id="motionChart" height="100"></canvas>
+                                </div>
+                                <div class="data-table">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Motion Detected</th>
+                                                <th>System Status</th>
+                                                <th>Alert Type</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="motionSensorData"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end sensors tab -->
+        </div><!-- end tab content -->
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="notification-toast toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="toastMessage">Alert! Critical issue detected!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+        <!-- Bootstrap JS (for toasts, etc.) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Chart.js (للجرافات) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- ✅ Paho MQTT WebSocket library (مهم جداً) -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+    <!-- كود الداشبورد بتاعك -->
+        <script src="app.js"></script>
+</body>
+</html>
