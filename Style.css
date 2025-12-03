@@ -109,6 +109,12 @@
             overflow: hidden;
         }
 
+        .data-table .table-responsive {
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+
         .data-table th {
             background: rgba(0, 180, 216, 0.3);
             color: white;
@@ -117,7 +123,7 @@
 
         .data-table td {
             border-color: rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.9);
+            color: rgba(0, 0, 0, 0.9);
         }
 
         .collapse-btn {

@@ -315,12 +315,13 @@
                         </h4>
 
                         <!-- Date Selector -->
+                        <!-- Date + Type + Resolution -->
                         <div class="row mb-4">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">Select Date:</label>
                                 <input type="date" id="dateSelector" class="form-control bg-dark text-light">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label class="form-label">Data Type:</label>
                                 <select id="dataTypeSelector" class="form-select bg-dark text-light">
                                     <option value="all">All Data</option>
@@ -332,7 +333,17 @@
                                     <option value="alerts">Security Alerts</option>
                                 </select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Chart Resolution:</label>
+                                <select id="chartResolution" class="form-select bg-dark text-light">
+                                    <option value="raw">Every reading</option>
+                                    <option value="minute">Per minute (avg)</option>
+                                    <option value="hour">Per hour (avg)</option>
+                                    <option value="day">Per day (avg)</option>
+                                </select>
+                            </div>
                         </div>
+
 
                         <!-- Summary Cards -->
                         <div class="row mb-4">
@@ -472,6 +483,14 @@
                                     <h5><i class="fas fa-tint text-primary"></i> Water Sensor History</h5>
                                     <canvas id="waterChart" height="100"></canvas>
                                 </div>
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Water Sensor History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                    <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="water">
+                                        <i class="fas fa-download"></i> Download as Image
+                                    </button>
+                                </div>
+
                                 <div class="data-table">
                                     <table class="table table-hover">
                                         <thead>
@@ -492,6 +511,13 @@
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-fire text-danger"></i> Flame Sensor History</h5>
                                     <canvas id="flameChart" height="100"></canvas>
+                                </div>
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Flame Sensor History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                    <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="flame">
+                                        <i class="fas fa-download"></i> Download as Image
+                                    </button>
                                 </div>
                                 <div class="data-table">
                                     <table class="table table-hover">
@@ -514,6 +540,13 @@
                                     <h5><i class="fas fa-wind text-success"></i> Gas Sensor History</h5>
                                     <canvas id="gasChart" height="100"></canvas>
                                 </div>
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Gas Sensor History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                    <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="gas">
+                                        <i class="fas fa-download"></i> Download as Image
+                                    </button>
+                                </div>
                                 <div class="data-table">
                                     <table class="table table-hover">
                                         <thead>
@@ -535,6 +568,13 @@
                                     <h5><i class="fas fa-thermometer-half text-warning"></i> Temperature History</h5>
                                     <canvas id="tempChart" height="100"></canvas>
                                 </div>
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Temperature History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                    <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="temp">
+                                        <i class="fas fa-download"></i> Download as Image
+                                    </button>
+                                </div>
                                 <div class="data-table">
                                     <table class="table table-hover">
                                         <thead>
@@ -554,6 +594,13 @@
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-running text-info"></i> Motion Detection History</h5>
                                     <canvas id="motionChart" height="100"></canvas>
+                                </div>
+                                <div class="sensor-chart">
+                                    <h5><i class="fas fa-tint text-primary"></i> Motion Detection History</h5>
+                                    <canvas id="waterChart" height="100"></canvas>
+                                    <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="motion">
+                                        <i class="fas fa-download"></i> Download as Image
+                                    </button>
                                 </div>
                                 <div class="data-table">
                                     <table class="table table-hover">
