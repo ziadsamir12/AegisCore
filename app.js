@@ -7,6 +7,7 @@ const MQTT_USER = "ESP32";
 const MQTT_PASS = "Ziad1272009";
 const CLIENT_ID = "aegiscore_web_" + Math.random().toString(16).substr(2, 8);
 
+// Main class to handle application logic
 class AegisCore {
     constructor() {
         this.client = null;
@@ -44,7 +45,7 @@ class AegisCore {
         this.initializeApp();
     }
 
-    /* ========= INIT ========= */
+    // Initialize application
     initializeApp() {
         this.loadStoredData();
         this.setDefaultDateInput();
@@ -56,7 +57,7 @@ class AegisCore {
         this.animateOnceOnLoad();
     }
 
-    /* ========= Storage ========= */
+    // Load stored data
     loadStoredData() {
         const stored = localStorage.getItem('aegiscore_data');
         if (stored) {
@@ -76,6 +77,7 @@ class AegisCore {
         }
     }
 
+    // Save data to localStorage
     saveStoredData() {
         try {
             localStorage.setItem('aegiscore_data', JSON.stringify(this.dataStore));
@@ -84,10 +86,12 @@ class AegisCore {
         }
     }
 
+    // Get current date in YYYY-MM-DD format
     getCurrentDate() {
         return new Date().toISOString().split('T')[0];
     }
 
+    // Set default date input to today
     setDefaultDateInput() {
         const dateInput = document.getElementById('dateSelector');
         if (dateInput) {
@@ -95,31 +99,40 @@ class AegisCore {
         }
     }
 
+    // Get selected date from the input
     getSelectedDate() {
         const dateInput = document.getElementById('dateSelector');
         return (dateInput && dateInput.value) ? dateInput.value : this.getCurrentDate();
     }
 
+    // Get selected data type (All, Water, Flame, etc.)
     getSelectedDataType() {
         const select = document.getElementById('dataTypeSelector');
         return select ? select.value : 'all';
     }
 
+    // Get selected chart resolution (Raw, Minute, Hour, Day)
     getSelectedResolution() {
         const select = document.getElementById('chartResolution');
         return select ? select.value : 'raw';
     }
 
-    /* ========= Toast ========= */
+    // Initialize toast notifications
     initializeToast() {
         try {
-            this.notificationToast = new bootstrap.Toast(document.getElementById('notificationToast'));
+            const toastEl = document.getElementById('notificationToast');
+            if (toastEl) {
+                this.notificationToast = new bootstrap.Toast(toastEl, {
+                    delay: 5000
+                });
+            }
         } catch (e) {
             console.warn('Bootstrap toast init failed', e);
             this.notificationToast = null;
         }
     }
 
+    // Show toast notifications
     showNotification(message, type = 'danger', duration = 5000) {
         const toast = document.getElementById('notificationToast');
         const toastMessage = document.getElementById('toastMessage');
@@ -128,6 +141,8 @@ class AegisCore {
         let bgClass = type;
         if (type === 'info') bgClass = 'primary';
         if (type === 'success') bgClass = 'success';
+        if (type === 'warning') bgClass = 'warning';
+        
         toast.className = `notification-toast toast align-items-center text-white bg-${bgClass} border-0`;
         toastMessage.textContent = message;
 
@@ -139,7 +154,7 @@ class AegisCore {
         }
     }
 
-    /* ========= MQTT ========= */
+    // Connect to MQTT broker
     connectToMQTT() {
         console.log('Connecting to:', MQTT_SERVER);
 
@@ -180,7 +195,7 @@ class AegisCore {
         });
     }
 
-    /* ========= Handle MQTT Messages ========= */
+    // Handle incoming MQTT messages
     handleMessage(topic, payload) {
         console.log('MQTT RAW MESSAGE:', topic, payload);
 
@@ -207,18 +222,16 @@ class AegisCore {
         this.refreshAnalytics();
     }
 
-    /* ========= UI Updates ========= */
+    /* UI Updates */
     updateUI(status) {
+        // Updating sensors, temperature, security and valve controls
         this.updateSensor('water', status.water, status.water_leak);
         this.updateSensor('flame', status.flame, status.flame_leak);
         this.updateSensor('gas', status.gas, status.gas_leak);
-
         this.updateTemperature(status.temp, status.fan);
         this.updateSecurity(status.pir_armed, status.motion);
-
         this.updateValve('water', status.valve_water_closed);
         this.updateValve('gas', status.valve_gas_closed);
-
         this.updateSensorToggle('water', status.water_sensor_enabled);
         this.updateSensorToggle('flame', status.flame_sensor_enabled);
         this.updateSensorToggle('gas', status.gas_sensor_enabled);
@@ -246,7 +259,13 @@ class AegisCore {
         }
 
         if (cardElement) {
-            cardElement.style.border = isLeak ? '2px solid #C62828' : '';
+            if (isLeak) {
+                cardElement.style.border = '2px solid #C62828';
+                cardElement.classList.add('alert');
+            } else {
+                cardElement.style.border = '';
+                cardElement.classList.remove('alert');
+            }
         }
     }
 
@@ -432,7 +451,7 @@ class AegisCore {
         console.log('Command sent:', command);
     }
 
-    /* ========= Event Listeners ========= */
+    /* Event Listeners */
     setupEventListeners() {
         // PIR Arm / Disarm
         const armPirBtn   = document.getElementById('armPir');
@@ -550,6 +569,14 @@ class AegisCore {
                 this.downloadChart(chartKey);
             });
         });
+
+        // Tab changes
+        const mainTabs = document.querySelectorAll('#mainTabs button[data-bs-toggle="tab"]');
+        mainTabs.forEach(tab => {
+            tab.addEventListener('shown.bs.tab', (event) => {
+                this.refreshAnalytics();
+            });
+        });
     }
 
     downloadChart(chartKey) {
@@ -565,7 +592,7 @@ class AegisCore {
         document.body.removeChild(link);
     }
 
-    /* ========= Alerts + Data Store ========= */
+    /* Alerts + Data Store */
     checkForAlerts(status) {
         if (status.water_leak) {
             this.showNotification('🚨 WATER LEAK DETECTED!', 'danger', 10000);
@@ -606,10 +633,16 @@ class AegisCore {
             this.dataStore.daily[today] = { detailed: [] };
         }
         this.dataStore.daily[today].detailed.push(dataPoint);
+        
+        // Keep only last 500 records per day to prevent localStorage overflow
+        if (this.dataStore.daily[today].detailed.length > 500) {
+            this.dataStore.daily[today].detailed = this.dataStore.daily[today].detailed.slice(-500);
+        }
+        
         this.saveStoredData();
     }
 
-    /* ========= Analytics ========= */
+    /* Analytics */
     refreshAnalytics() {
         const date = this.getSelectedDate();
         const type = this.getSelectedDataType();
@@ -619,7 +652,6 @@ class AegisCore {
 
         this.updateSummaryCards(dayData);
         this.renderMainDataTable(dayData, type);
-        this.renderDetailedTable(dayData);
         this.renderSensorTables(dayData);
         this.updateCharts(dayData, resolution);
     }
@@ -661,6 +693,7 @@ class AegisCore {
         ordered.forEach(record => {
             sensorsToShow.forEach(sensor => {
                 let value, status, isAlert = false;
+                let sensorName = sensor;
 
                 if (sensor === 'water') {
                     value  = record.water;
@@ -675,10 +708,11 @@ class AegisCore {
                     isAlert= !!record.gas_leak;
                     status = record.gas_leak ? 'LEAK' : 'Normal';
                 } else if (sensor === 'temperature') {
-                    value  = record.temperature;
+                    value  = record.temperature + '°C';
+                    sensorName = 'temp';
                     status = record.fan ? 'FAN ON' : 'Normal';
                 } else if (sensor === 'motion') {
-                    value  = record.motion;
+                    value  = record.motion === 1 ? 'Detected' : 'No';
                     isAlert= (record.motion === 1 && record.pir_armed);
                     status = record.motion === 1 ? 'Detected' : 'No Motion';
                 }
@@ -688,10 +722,10 @@ class AegisCore {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${record.time}</td>
-                    <td>${sensor.toUpperCase()}</td>
+                    <td>${sensorName.toUpperCase()}</td>
                     <td>${value}</td>
                     <td>
-                        <span class="badge ${isAlert ? 'bg-danger' : 'bg-success'}">
+                        <span class="alert-status ${isAlert ? 'bg-danger' : 'bg-success'}">
                             ${status}
                         </span>
                     </td>
@@ -706,32 +740,6 @@ class AegisCore {
         if (!body.children.length) {
             body.innerHTML = '<tr><td colspan="5" class="text-center">No data for this filter</td></tr>';
         }
-    }
-
-    renderDetailedTable(dayData) {
-        const body = document.getElementById('detailedDataBody');
-        if (!body) return;
-        body.innerHTML = '';
-
-        if (!dayData.length) {
-            body.innerHTML = '<tr><td colspan="7" class="text-center">No detailed data available</td></tr>';
-            return;
-        }
-
-        const ordered = [...dayData].reverse();
-        ordered.forEach(record => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${record.timestamp}</td>
-                <td>${record.water}</td>
-                <td>${record.flame}</td>
-                <td>${record.gas}</td>
-                <td>${record.temperature}</td>
-                <td>${record.motion === 1 ? 'Yes' : 'No'}</td>
-                <td>${record.pir_armed ? 'Yes' : 'No'}</td>
-            `;
-            body.appendChild(tr);
-        });
     }
 
     renderSensorTables(dayData) {
@@ -815,8 +823,42 @@ class AegisCore {
         });
     }
 
-    /* ========= Charts ========= */
+    /* Charts */
     initializeCharts() {
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#ffffff',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: '#b0b0c0',
+                        maxTicksLimit: 10
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: '#b0b0c0'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            }
+        };
+
         const waterCtx  = document.getElementById('waterChart');
         const flameCtx  = document.getElementById('flameChart');
         const gasCtx    = document.getElementById('gasChart');
@@ -826,41 +868,101 @@ class AegisCore {
         if (waterCtx) {
             this.charts.water = new Chart(waterCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Water', data: [] }] },
-                options: { responsive: true }
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Water Level',
+                        data: [],
+                        borderColor: '#1E88E5',
+                        backgroundColor: 'rgba(30, 136, 229, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }] 
+                },
+                options: commonOptions
             });
         }
         if (flameCtx) {
             this.charts.flame = new Chart(flameCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Flame', data: [] }] },
-                options: { responsive: true }
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Flame Detection',
+                        data: [],
+                        borderColor: '#C62828',
+                        backgroundColor: 'rgba(198, 40, 40, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }] 
+                },
+                options: commonOptions
             });
         }
         if (gasCtx) {
             this.charts.gas = new Chart(gasCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Gas', data: [] }] },
-                options: { responsive: true }
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Gas Level',
+                        data: [],
+                        borderColor: '#2E7D32',
+                        backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }] 
+                },
+                options: commonOptions
             });
         }
         if (tempCtx) {
             this.charts.temp = new Chart(tempCtx, {
                 type: 'line',
-                data: { labels: [], datasets: [{ label: 'Temperature', data: [] }] },
-                options: { responsive: true }
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: '#FF9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }] 
+                },
+                options: commonOptions
             });
         }
         if (motionCtx) {
             this.charts.motion = new Chart(motionCtx, {
-                type: 'line',
-                data: { labels: [], datasets: [{ label: 'Motion', data: [] }] },
-                options: { responsive: true }
+                type: 'bar',
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Motion Detected',
+                        data: [],
+                        backgroundColor: 'rgba(0, 180, 216, 0.6)',
+                        borderColor: '#00B4D8',
+                        borderWidth: 1
+                    }] 
+                },
+                options: commonOptions
             });
         }
     }
 
     aggregateForResolution(dayData, resolution) {
+        if (!dayData.length) {
+            return {
+                labels: [],
+                water:  [],
+                flame:  [],
+                gas:    [],
+                temp:   [],
+                motion: []
+            };
+        }
+
         if (resolution === 'raw') {
             return {
                 labels: dayData.map(d => d.time),
@@ -922,50 +1024,214 @@ class AegisCore {
         if (this.charts.water) {
             this.charts.water.data.labels = agg.labels;
             this.charts.water.data.datasets[0].data = agg.water;
-            this.charts.water.update();
+            this.charts.water.update('none');
         }
         if (this.charts.flame) {
             this.charts.flame.data.labels = agg.labels;
             this.charts.flame.data.datasets[0].data = agg.flame;
-            this.charts.flame.update();
+            this.charts.flame.update('none');
         }
         if (this.charts.gas) {
             this.charts.gas.data.labels = agg.labels;
             this.charts.gas.data.datasets[0].data = agg.gas;
-            this.charts.gas.update();
+            this.charts.gas.update('none');
         }
         if (this.charts.temp) {
             this.charts.temp.data.labels = agg.labels;
             this.charts.temp.data.datasets[0].data = agg.temp;
-            this.charts.temp.update();
+            this.charts.temp.update('none');
         }
         if (this.charts.motion) {
             this.charts.motion.data.labels = agg.labels;
             this.charts.motion.data.datasets[0].data = agg.motion;
-            this.charts.motion.update();
+            this.charts.motion.update('none');
         }
     }
 
-    /* ========= Animation ========= */
     animateOnceOnLoad() {
         if (this._hasAnimatedOnLoad) return;
-        this._hasAnimatedOnLoad = true;
-
+        
         const elements = document.querySelectorAll('[data-animate-child]');
-        elements.forEach((el, idx) => {
+        elements.forEach((el, index) => {
             el.style.opacity = '0';
-            el.style.transform = 'translateY(14px)';
+            el.style.transform = 'translateY(20px)';
             setTimeout(() => {
-                el.classList.add('enter-animate');
-                setTimeout(() => {
-                    el.classList.add('entered');
-                }, 700);
-            }, idx * 100);
+                el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 100);
         });
+        
+        this._hasAnimatedOnLoad = true;
     }
 }
 
 // Start app
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
     window.aegisCore = new AegisCore();
+});
+
+
+
+function setTheme(themeName) {
+    const theme = themes[themeName];
+    document.documentElement.style.setProperty('--background-dark', theme.backgroundDark);
+    document.documentElement.style.setProperty('--background-medium', theme.backgroundMedium);
+    document.documentElement.style.setProperty('--background-light', theme.backgroundLight);
+    document.documentElement.style.setProperty('--text-primary', theme.textPrimary);
+    document.documentElement.style.setProperty('--text-secondary', theme.textSecondary);
+    
+    localStorage.setItem('selectedTheme', themeName);
+}
+
+// تحميل الثيم المحفوظ
+window.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
+    setTheme(savedTheme);
+});
+
+
+// تفعيل أنيميشنات الدخول للعناصر
+document.addEventListener('DOMContentLoaded', function() {
+    // إخفاء شاشة التحميل
+    const loadingScreen = document.createElement('div');
+    loadingScreen.className = 'page-loading';
+    loadingScreen.innerHTML = `
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-shield-alt"></i> AEGISCORE
+            </div>
+            <div class="loading-bar"></div>
+        </div>
+    `;
+    document.body.appendChild(loadingScreen);
+    
+    setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+            loadingScreen.remove();
+        }, 500);
+    }, 1500);
+    
+    // تفعيل أنيميشنات العناصر
+    const animateElements = document.querySelectorAll('[data-animate-child]');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const delay = element.getAttribute('data-delay') || 0;
+                
+                setTimeout(() => {
+                    element.style.animation = `fadeInUp 0.8s ${delay}s both`;
+                    element.classList.add('entered');
+                }, delay * 1000);
+                
+                observer.unobserve(element);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    animateElements.forEach((element, index) => {
+        // إضافة تأخير تدريجي للعناصر
+        element.style.setProperty('--delay', `${0.1 * (index % 10)}s`);
+        observer.observe(element);
+    });
+    
+    // تأثيرات خاصة عند تمرير المؤشر
+    const cards = document.querySelectorAll('.sensor-card, .btn, .nav-link');
+    
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '100';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '';
+        });
+    });
+    
+    // تأثيرات للأزرار عند النقر
+    const buttons = document.querySelectorAll('.btn');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            this.classList.add('clicked');
+            setTimeout(() => {
+                this.classList.remove('clicked');
+            }, 300);
+        });
+    });
+    
+    // تأثيرات للقيم الحساسة
+    function checkCriticalValues() {
+        const waterValue = parseInt(document.getElementById('waterValue').textContent);
+        const flameValue = parseInt(document.getElementById('flameValue').textContent);
+        const gasValue = parseInt(document.getElementById('gasValue').textContent);
+        
+        const waterCard = document.getElementById('waterSensorCard');
+        const flameCard = document.getElementById('flameSensorCard');
+        const gasCard = document.getElementById('gasSensorCard');
+        
+        if (waterValue > 500) {
+            waterCard.classList.add('alert');
+            waterCard.classList.add('critical');
+        } else {
+            waterCard.classList.remove('alert');
+            waterCard.classList.remove('critical');
+        }
+        
+        if (flameValue > 100) {
+            flameCard.classList.add('alert');
+            flameCard.classList.add('critical');
+        } else {
+            flameCard.classList.remove('alert');
+            flameCard.classList.remove('critical');
+        }
+        
+        if (gasValue > 300) {
+            gasCard.classList.add('alert');
+            gasCard.classList.add('critical');
+        } else {
+            gasCard.classList.remove('alert');
+            gasCard.classList.remove('critical');
+        }
+    }
+    
+    // تحديث دوري للتحقق من القيم
+    setInterval(checkCriticalValues, 1000);
+    
+    // تأثيرات خاصة للاتصال
+    function updateConnectionStatus(connected) {
+        const statusBadge = document.getElementById('connectionStatus');
+        const statusIcon = statusBadge.querySelector('i');
+        
+        if (connected) {
+            statusBadge.className = 'badge bg-success';
+            statusBadge.innerHTML = '<i class="fas fa-wifi"></i> Connected';
+            
+            // تأثير نجاح الاتصال
+            statusBadge.style.animation = 'pulse 1s ease';
+            setTimeout(() => {
+                statusBadge.style.animation = '';
+            }, 1000);
+        } else {
+            statusBadge.className = 'badge bg-danger';
+            statusBadge.innerHTML = '<i class="fas fa-wifi-slash"></i> Disconnected';
+            
+            // تأثير فقدان الاتصال
+            statusBadge.style.animation = 'pulse 0.5s ease 3';
+            setTimeout(() => {
+                statusBadge.style.animation = '';
+            }, 1500);
+        }
+    }
+    
+    // محاكاة تغيير حالة الاتصال (للتجربة)
+    setTimeout(() => {
+        updateConnectionStatus(true);
+    }, 2000);
 });
