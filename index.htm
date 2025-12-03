@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>AegisCore</title>
-    <link rel="icon" href="Gemini_Generated_Image_kevgvmkevgvmkevg.png" >
+    <link rel="icon" href="/Gemini_Generated_Image_kevgvmkevgvmkevg.png" >
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="Style.css">
 </head>
 <body>
@@ -42,7 +44,7 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="sensors-tab" data-bs-toggle="tab" data-bs-target="#sensors" type="button" role="tab">
-                    <i class="fas fa-sensors"></i> Sensor Details
+                    <i class="fas fa-microchip"></i> Sensor Details
                 </button>
             </li>
         </ul>
@@ -56,7 +58,7 @@
                     <div class="col-md-6">
                         <div class="card sensor-card" data-animate-child>
                             <div class="card-body">
-                                <h5 class="card-title text-cyber">
+                                <h5 class="card-title">
                                     <i class="fas fa-link"></i> System Status
                                 </h5>
                                 <div id="systemStatus">
@@ -88,7 +90,7 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <h4 class="mb-3 cyber-glow" data-animate-child>
-                            <i class="fas fa-sensors"></i> Security Sensors
+                            <i class="fas fa-sensor-triangle-exclamation"></i> Security Sensors
                         </h4>
                     </div>
 
@@ -101,7 +103,6 @@
                                 <div class="sensor-value display-6 fw-bold text-primary" id="waterValue">0</div>
                                 <div class="sensor-status">
                                     <span id="waterStatus" class="alert-status bg-success">Normal</span>
-                                    <span id="waterLed" class="led-indicator" style="display: none;"></span>
                                 </div>
                             </div>
                         </div>
@@ -116,7 +117,6 @@
                                 <div class="sensor-value display-6 fw-bold text-danger" id="flameValue">0</div>
                                 <div class="sensor-status">
                                     <span id="flameStatus" class="alert-status bg-success">Normal</span>
-                                    <span id="flameLed" class="led-indicator" style="display: none;"></span>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +131,6 @@
                                 <div class="sensor-value display-6 fw-bold text-success" id="gasValue">0</div>
                                 <div class="sensor-status">
                                     <span id="gasStatus" class="alert-status bg-success">Normal</span>
-                                    <span id="gasLed" class="led-indicator" style="display: none;"></span>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +151,7 @@
                     </div>
                 </div>
 
-                <!-- Security System & Control + Valve Control -->
+                <!-- Security System & Valve Control -->
                 <div class="row">
                     <!-- Security System -->
                     <div class="col-md-6 mb-4">
@@ -236,7 +235,7 @@
                     </div>
                 </div>
 
-                <!-- Sensors Control (Enable / Disable + Lock Icon) -->
+                <!-- Sensors Control (Enable / Disable) -->
                 <div class="row">
                     <div class="col-md-12 mb-4">
                         <div class="card sensor-card" data-animate-child>
@@ -314,7 +313,6 @@
                             <i class="fas fa-chart-line"></i> Data Analytics & History
                         </h4>
 
-                        <!-- Date Selector -->
                         <!-- Date + Type + Resolution -->
                         <div class="row mb-4">
                             <div class="col-md-4">
@@ -343,7 +341,6 @@
                                 </select>
                             </div>
                         </div>
-
 
                         <!-- Summary Cards -->
                         <div class="row mb-4">
@@ -388,7 +385,7 @@
                         <!-- Data Table -->
                         <div class="data-table">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table table-hover mb-0">
                                     <thead>
                                         <tr>
                                             <th>Time</th>
@@ -415,7 +412,7 @@
                             <div class="collapse mt-3" id="detailedData">
                                 <div class="data-table">
                                     <div class="table-responsive">
-                                        <table class="table table-sm table-hover">
+                                        <table class="table table-sm table-hover mb-0">
                                             <thead>
                                                 <tr>
                                                     <th>Timestamp</th>
@@ -478,11 +475,8 @@
                         </ul>
 
                         <div class="tab-content" id="sensorTabsContent">
+                            <!-- Water -->
                             <div class="tab-pane fade show active" id="waterSensor" role="tabpanel">
-                                <div class="sensor-chart">
-                                    <h5><i class="fas fa-tint text-primary"></i> Water Sensor History</h5>
-                                    <canvas id="waterChart" height="100"></canvas>
-                                </div>
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-tint text-primary"></i> Water Sensor History</h5>
                                     <canvas id="waterChart" height="100"></canvas>
@@ -490,135 +484,132 @@
                                         <i class="fas fa-download"></i> Download as Image
                                     </button>
                                 </div>
-
                                 <div class="data-table">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Value</th>
-                                                <th>Status</th>
-                                                <th>Valve Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="waterSensorData"></tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Value</th>
+                                                    <th>Status</th>
+                                                    <th>Valve Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="waterSensorData"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Flame -->
                             <div class="tab-pane fade" id="flameSensor" role="tabpanel">
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-fire text-danger"></i> Flame Sensor History</h5>
                                     <canvas id="flameChart" height="100"></canvas>
-                                </div>
-                                <div class="sensor-chart">
-                                    <h5><i class="fas fa-tint text-primary"></i> Flame Sensor History</h5>
-                                    <canvas id="waterChart" height="100"></canvas>
                                     <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="flame">
                                         <i class="fas fa-download"></i> Download as Image
                                     </button>
                                 </div>
                                 <div class="data-table">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Value</th>
-                                                <th>Status</th>
-                                                <th>Valve Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="flameSensorData"></tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Value</th>
+                                                    <th>Status</th>
+                                                    <th>Valve Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="flameSensorData"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Gas -->
                             <div class="tab-pane fade" id="gasSensor" role="tabpanel">
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-wind text-success"></i> Gas Sensor History</h5>
                                     <canvas id="gasChart" height="100"></canvas>
-                                </div>
-                                <div class="sensor-chart">
-                                    <h5><i class="fas fa-tint text-primary"></i> Gas Sensor History</h5>
-                                    <canvas id="waterChart" height="100"></canvas>
                                     <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="gas">
                                         <i class="fas fa-download"></i> Download as Image
                                     </button>
                                 </div>
                                 <div class="data-table">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Value</th>
-                                                <th>Status</th>
-                                                <th>Valve Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="gasSensorData"></tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Value</th>
+                                                    <th>Status</th>
+                                                    <th>Valve Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="gasSensorData"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Temp -->
                             <div class="tab-pane fade" id="tempSensor" role="tabpanel">
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-thermometer-half text-warning"></i> Temperature History</h5>
                                     <canvas id="tempChart" height="100"></canvas>
-                                </div>
-                                <div class="sensor-chart">
-                                    <h5><i class="fas fa-tint text-primary"></i> Temperature History</h5>
-                                    <canvas id="waterChart" height="100"></canvas>
                                     <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="temp">
                                         <i class="fas fa-download"></i> Download as Image
                                     </button>
                                 </div>
                                 <div class="data-table">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Temperature</th>
-                                                <th>Fan Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tempSensorData"></tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Temperature</th>
+                                                    <th>Fan Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tempSensorData"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
+                            <!-- Motion -->
                             <div class="tab-pane fade" id="motionSensor" role="tabpanel">
                                 <div class="sensor-chart">
                                     <h5><i class="fas fa-running text-info"></i> Motion Detection History</h5>
                                     <canvas id="motionChart" height="100"></canvas>
-                                </div>
-                                <div class="sensor-chart">
-                                    <h5><i class="fas fa-tint text-primary"></i> Motion Detection History</h5>
-                                    <canvas id="waterChart" height="100"></canvas>
                                     <button class="btn btn-sm btn-outline-light mt-2" data-download-chart="motion">
                                         <i class="fas fa-download"></i> Download as Image
                                     </button>
                                 </div>
                                 <div class="data-table">
-                                    <table class="table table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Time</th>
-                                                <th>Motion Detected</th>
-                                                <th>System Status</th>
-                                                <th>Alert Type</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="motionSensorData"></tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Motion Detected</th>
+                                                    <th>System Status</th>
+                                                    <th>Alert Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="motionSensorData"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
 
-                        </div>
+                        </div><!-- end sensorTabsContent -->
                     </div>
                 </div>
             </div><!-- end sensors tab -->
@@ -635,16 +626,13 @@
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
     </div>
-        <!-- Bootstrap JS (for toasts, etc.) -->
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Chart.js (للجرافات) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- ✅ Paho MQTT WebSocket library (مهم جداً) -->
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-
-    <!-- كود الداشبورد بتاعك -->
-        <script src="app.js"></script>
+    <!-- MQTT.js -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <!-- App logic -->
+    <script src="app.js"></script>
 </body>
 </html>

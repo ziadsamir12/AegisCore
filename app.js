@@ -17,7 +17,7 @@ class AegisCore {
         this.notificationToast = null;
         this.seenEnabled = false;
 
-        // Flags من آخر Status
+        // Flags
         this.flags = {
             waterSensorEnabled: null,
             flameSensorEnabled: null,
@@ -26,12 +26,11 @@ class AegisCore {
             gasValveClosed: null
         };
 
-        // تخزين بيانات اليوم
+        // Data store
         this.dataStore = {
             daily: {}
         };
 
-        // Charts
         this.charts = {
             water: null,
             flame: null,
@@ -87,10 +86,6 @@ class AegisCore {
 
     getCurrentDate() {
         return new Date().toISOString().split('T')[0];
-    }
-
-    getCurrentTime() {
-        return new Date().toLocaleTimeString();
     }
 
     setDefaultDateInput() {
@@ -191,7 +186,6 @@ class AegisCore {
 
         if (topic !== STATUS_TOPIC) return;
 
-        // رسائل بسيطة زي "ESP32 ONLINE" بنطنشها
         if (!payload || payload[0] !== '{') {
             console.warn('Ignoring non-JSON payload:', payload);
             return;
@@ -379,8 +373,6 @@ class AegisCore {
             text = status.rtc;
         } else if (status.timestamp) {
             text = `Timestamp: ${status.timestamp}`;
-        } else if (status.date || status.time) {
-            text = `Date: ${status.date || '-'} | Time: ${status.time || '-'}`;
         } else {
             text = 'Last update: ' + new Date().toLocaleString();
         }
@@ -490,7 +482,7 @@ class AegisCore {
             });
         }
 
-        // Sensors enable/disable
+        // Water Sensor Enable/Disable
         const enableWaterSensorBtn  = document.getElementById('enableWaterSensor');
         const disableWaterSensorBtn = document.getElementById('disableWaterSensor');
         if (enableWaterSensorBtn) enableWaterSensorBtn.addEventListener('click', () => {
@@ -504,6 +496,7 @@ class AegisCore {
             this.publishCommand("DISABLE_WATER_SENSOR");
         });
 
+        // Flame Sensor Enable/Disable
         const enableFlameSensorBtn  = document.getElementById('enableFlameSensor');
         const disableFlameSensorBtn = document.getElementById('disableFlameSensor');
         if (enableFlameSensorBtn) enableFlameSensorBtn.addEventListener('click', () => {
@@ -517,6 +510,7 @@ class AegisCore {
             this.publishCommand("DISABLE_FLAME_SENSOR");
         });
 
+        // Gas Sensor Enable/Disable
         const enableGasSensorBtn  = document.getElementById('enableGasSensor');
         const disableGasSensorBtn = document.getElementById('disableGasSensor');
         if (enableGasSensorBtn) enableGasSensorBtn.addEventListener('click', () => {
@@ -536,7 +530,7 @@ class AegisCore {
             toggleSeenBtn.addEventListener('click', () => {
                 const command = this.seenEnabled ? "SEEN_OFF" : "SEEN_ON";
                 this.publishCommand(command);
-                this.updateSeen(!this.seenEnabled); // Optimistic
+                this.updateSeen(!this.seenEnabled);
             });
         }
 
@@ -724,7 +718,7 @@ class AegisCore {
             return;
         }
 
-        const ordered = [...dayData].reverse(); // أحدث فوق
+        const ordered = [...dayData].reverse();
         ordered.forEach(record => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -971,7 +965,7 @@ class AegisCore {
     }
 }
 
-// Start
+// Start app
 window.addEventListener('load', () => {
     window.aegisCore = new AegisCore();
 });
